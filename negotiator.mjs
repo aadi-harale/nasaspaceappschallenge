@@ -24,13 +24,19 @@ export function analyzeNegotiation(plan,settings,lockedSlots=[false,false,false,
   // ANY encoded candidate with current farmer locks. Bounded sensitivity, not advice.
   function minimumExtraIrrigation(maxExtraMm=600){
     if(!validInputs(settings.irrigation))throw Error("Invalid irrigation");
-    for(let extra=0;extra<=maxExtraMm;extra++){
-      const proposed=repair(plan,{...settings,irrigation:settings.irrigation+extra},lockedSlots);
-      if(proposed.alternative)return {extraMm:extra,totalMm:settings.irrigation+extra,
-        plan:proposed.alternative.plan,changes:proposed.alternative.changes,
-        status:"illustrative mathematical threshold"};
+    // Feasibility is monotonic in nonnegative irrigation within this model.
+    // Binary search avoids hundreds of expensive 256-plan enumerations per UI adjustment.
+    const search=(extra)=>repair(plan,{...settings,irrigation:settings.irrigation+extra},lockedSlots).alternative;
+    if(!search(maxExtraMm))return null;
+    let low=0,high=maxExtraMm;
+    while(low<high){
+      const mid=Math.floor((low+high)/2);
+      if(search(mid))high=mid;else low=mid+1;
     }
-    return null;
+    const chosen=search(low);
+    return {extraMm:low,totalMm:settings.irrigation+low,
+      plan:chosen.plan,changes:chosen.changes,
+      status:"illustrative mathematical threshold"};
   }
   const extra= !replacement?minimumExtraIrrigation():null;
   const unlockOptions=lockedSlots.flatMap((locked,i)=>{

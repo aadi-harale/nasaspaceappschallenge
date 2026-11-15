@@ -22,3 +22,19 @@ test("historical replay uses verified NASA seasonal totals and does not invent t
  assert.equal(rows[1].alternative,null);
  assert.equal(incompleteYear.year,2024);
 });
+
+test("counterfactual explanations agree with engine deficits",async()=>{
+ const {explainRepair}=await import("./engine.mjs");
+ const original=["soybean","wheat","maize","wheat"],revised=["soybean","chickpea","maize","chickpea"];
+ const report=explainRepair(original,revised,s);
+ assert.equal(report.originalDeficitMm,390);
+ assert.equal(report.repairedDeficitMm,0);
+ assert.equal(report.changes.length,2);
+ for(const swap of report.changes){assert.equal(swap.oldDeficitMm,195);assert.equal(swap.newDeficitMm,0)}
+});
+test("counterfactual explanation does not claim water benefits for non-water swaps",async()=>{
+ const {explainRepair}=await import("./engine.mjs");
+ const x=explainRepair(["soybean","chickpea","maize","chickpea"],["millet","chickpea","maize","chickpea"],s);
+ assert.equal(x.changes[0].oldDeficitMm,0);
+ assert.match(x.changes[0].note,/diversity or tie-breaker/);
+});

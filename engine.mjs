@@ -37,7 +37,7 @@ export function parseNasa(json){
  if(!daily||typeof daily!=="object")throw Error("NASA response lacks precipitation");
  const groups=new Map();
  for(const [date,mm] of Object.entries(daily)){
-  if(!/^\\d{8}$/.test(date)||!Number.isFinite(mm)||mm<0)continue;
+  if(!/^\d{8}$/.test(date)||!Number.isFinite(mm)||mm<0)continue;
   const y=+date.slice(0,4),m=+date.slice(4,6),day=+date.slice(6,8);
   if(m<1||m>12||day<1||day>new Date(Date.UTC(y,m,0)).getUTCDate())continue;
   const season=m>=6&&m<=9?"kharif":m>=10||m<=3?"rabi":null;

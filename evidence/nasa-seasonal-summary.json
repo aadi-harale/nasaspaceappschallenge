@@ -1,0 +1,40 @@
+{
+  "provider": "NASA POWER Daily API",
+  "parameter": "PRECTOTCORR",
+  "units": "mm/day",
+  "latitude": 18.52,
+  "longitude": 73.85,
+  "retrievalDate": "2026-11-15",
+  "period": "2022-01-01 through 2024-12-31",
+  "rawResponseSha256": "66fd31820934bbf590b5a44321020d1bb5d12b369a4d38eeadcb8e6cf5a7060c",
+  "sourceUrl": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=PRECTOTCORR&community=AG&latitude=18.52&longitude=73.85&start=20220101&end=20241231&format=JSON&time-standard=LST",
+  "verificationRun": "https://github.com/aadi-harale/nasaspaceappschallenge/actions/runs/43730283559",
+  "completeSeasons": [
+    {
+      "year": 2022,
+      "season": "kharif",
+      "rainfallMm": 1988.83
+    },
+    {
+      "year": 2022,
+      "season": "rabi",
+      "rainfallMm": 227.23
+    },
+    {
+      "year": 2023,
+      "season": "kharif",
+      "rainfallMm": 1817.85
+    },
+    {
+      "year": 2023,
+      "season": "rabi",
+      "rainfallMm": 75.95
+    },
+    {
+      "year": 2024,
+      "season": "kharif",
+      "rainfallMm": 2417.46
+    }
+  ],
+  "note": "2024-25 Rabi unavailable because the audited source period ends 2024-12-31. These are regional precipitation totals, not crop effective rainfall, and are not independent agronomic validation."
+}

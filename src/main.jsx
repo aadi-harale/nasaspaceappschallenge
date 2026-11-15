@@ -4,6 +4,7 @@ import {Satellite,Leaf,ArrowRight,ArrowDownRight,ShieldCheck,Database,Activity,D
 import {crops,seasons,initial,repair,explainRepair,fetchNasa} from "../engine.mjs";
 import {observedYears,replayObservedYears,nasaEvidence} from "../historical-replay.mjs";
 import {analyzeNegotiation} from "../negotiator.mjs";
+import {createDecisionBrief} from "../decision-brief.mjs";
 import "./style.css";
 
 const seasonLabel=["Year 01 · Monsoon","Year 01 · Winter","Year 02 · Monsoon","Year 02 · Winter"];
@@ -35,6 +36,16 @@ function App(){
  const setPreset=(preset)=>{const p=presets[preset];setRainfall({...p.rainfall});setStress(p.stress);setIrrigation(p.irrigation);setNasa(null);setApiError("")};
  async function loadNasa(){setLoading(true);setApiError("");try{const x=await fetchNasa(Number(location.lat),Number(location.lon));setNasa({...x,lat:Number(location.lat),lon:Number(location.lon)});setRainfall({...x.rainfall});}catch(e){setNasa(null);setApiError(String(e.message||e))}finally{setLoading(false)}}
  function exportEvidence(){const data={project:"AgroShift Rotation Rescue",generatedAt:new Date().toISOString(),plan,lockedSlots,settings,source:isLinked?"NASA POWER historical seasonal medians":"Manual or illustrative rainfall scenario",sourceUrl:isLinked?nasa.url:null,original:output?.original,alternative:output?.alternative,explanation,historicalScenarios:historical,nasaEvidence,disclaimer:"Crop water, soil utilization and cover values are illustrative. Not a farming recommendation."};const a=document.createElement("a");const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));a.href=url;a.download="agroshift-evidence.json";a.click();URL.revokeObjectURL(url)}
+ function downloadAdvisorBrief(){
+   try {
+     const txt=createDecisionBrief({plan,lockedSlots,settings,
+       dataSource:isLinked?"NASA POWER API seasonal medians (browser response)":"Manual / illustrative rainfall inputs",
+       sourceUrl:isLinked?nasa.url:null,generatedAt:new Date().toISOString()});
+     const url=URL.createObjectURL(new Blob([txt],{type:"text/plain;charset=utf-8"}));
+     const a=document.createElement("a");a.href=url;a.download="agroshift-advisor-brief.txt";a.click();
+     setTimeout(()=>URL.revokeObjectURL(url),3000);
+   } catch(e){setApiError("Could not generate advisor brief: "+e.message)}
+ }
  const changedCount=alternative?.changes??null;
  return <div className="shell"><a href="#main-content" className="skip-link">Skip to main content</a>
   <aside id="agroshift-sidebar" className={"sidebar "+(mobileOpen?"mobile-open":"")}>
@@ -84,7 +95,7 @@ function App(){
         {!negotiation.hasRepair&&<div className="negotiation-recovery"><div><small className="kicker">WHEN THE ENGINE SAYS NO</small><h4>{negotiation.blockedByFarmerLocks?"Farmer priorities block the otherwise passing alternatives":"No passing crop rotation under current settings"}</h4><p>Explore hypothetical constraints. These are model thresholds, not farming recommendations.</p></div>
         {negotiation.unlockOptions.length>0&&<div className="recovery-option"><b>Possible priority negotiation</b>{negotiation.unlockOptions.map(o=><p key={o.slot}>Allowing slot {o.slot} ({o.crop}) to change produces a passing encoded alternative with {o.changes} substitutions.</p>)}</div>}
         <div className="recovery-option"><b>Modeled irrigation sensitivity</b><p>{negotiation.minimumAdditionalIrrigation?"An additional "+negotiation.minimumAdditionalIrrigation.extraMm+" mm per season would make at least one plan pass this simplified model. This is not an irrigation recommendation.":"No passing option within an additional 600 mm per season in this simplified sensitivity search."}</p></div></div>}
-        <div className="negotiation-disclaimer"><AlertTriangle size={16}/><span>These comparisons use provisional crop demands and soil factors. A model pass is not independent agronomic validation.</span></div>
+        <div className="negotiation-actions"><button type="button" className="hero-button" onClick={downloadAdvisorBrief}><Download size={17}/> Download advisor decision brief</button><p>Includes your crop locks, inputs, NASA source status, computed deficits, fragility checks, and the scientific review checklist.</p></div><div className="negotiation-disclaimer"><AlertTriangle size={16}/><span>These comparisons use provisional crop demands and soil factors. A model pass is not independent agronomic validation.</span></div>
       </section>}
      </section>
      <section className="bottom-note"><ShieldCheck size={20}/><p><b>Science before hype.</b> A passing result means the encoded water and crop-family rules are satisfied, not that a crop will survive, increase yield, save measured irrigation, or improve actual soil health.</p><button onClick={()=>setView("evidence")}>Read limitations <ArrowUpRight size={15}/></button></section>

@@ -29,3 +29,9 @@
 .negotiation-disclaimer{display:flex;align-items:flex-start;gap:9px;color:#d6c59e;font-size:11px;line-height:1.6;margin-top:17px}
 .negotiation-disclaimer svg{flex:none;color:#f1c58d}
 @media(max-width:800px){.negotiation-grid{grid-template-columns:1fr}.negotiation{padding:18px}}
+
+/* Advisor handoff: readable and accessible product completion */
+.negotiation-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-top:1px solid #3a573d;margin-top:19px;padding-top:20px}
+.negotiation-actions .hero-button{white-space:normal;text-align:center}
+.negotiation-actions p{margin:0;max-width:450px;color:#aec9af;font-size:11px;line-height:1.6}
+@media(max-width:600px){.negotiation-actions .hero-button{width:100%}}

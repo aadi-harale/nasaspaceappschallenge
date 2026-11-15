@@ -22,6 +22,7 @@ export function createDecisionBrief({plan,settings,lockedSlots=[false,false,fals
  "",
  "PURPOSE",
  "Audit a rotation repair under encoded agricultural constraints, not to make a validated farming recommendation.",
+ "NOT advice: no modeled threshold or crop suggestion substitutes for local agricultural expert review.",
  "",
  "INPUT PROVENANCE",
  "Rainfall mode: "+dataSource,

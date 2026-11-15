@@ -5,7 +5,7 @@
 An explainable climate-aware crop rotation *repair* experiment. Instead of ranking unrelated rotations, AgroShift starts from the farmer's existing plan, diagnoses a simplified seasonal water-budget failure, and finds the fewest crop substitutions satisfying the encoded constraints.
 
 ## Live prototype
-Open `index.html` through a static host (GitHub Pages, Vercel, or `python -m http.server 8000`). The NASA POWER button fetches daily regional precipitation directly from NASA; live observations and illustrative data are explicitly distinguished.
+**Deployed:** https://agroshift-resilience.vercel.app/\n\nOpen `index.html` through a static host (GitHub Pages, Vercel, or `python -m http.server 8000`). The NASA POWER button fetches daily regional precipitation directly from NASA; live observations and illustrative data are explicitly distinguished.
 
 ## Primary NASA resource
 [NASA POWER daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/), `PRECTOTCORR`, agricultural community.
@@ -19,9 +19,9 @@ Public Field Shift projects already provide satellite dashboards, NASA data, cro
 ## AI use and acknowledgments
 AI assisted design, code and documentation. NASA POWER is credited as the climate observation provider. Independent student project; not endorsed by NASA. No NASA logos used.
 
-## Submission checklist
+## Verification\n\nGitHub Actions test run: https://github.com/aadi-harale/nasaspaceappschallenge/actions/runs/43715567722 (successful). Vercel deployment state: READY. Project SSO protection disabled. The NASA POWER browser fetch and agricultural parameter calibration are not yet externally validated.\n\n## Submission checklist
 - Validate NASA API live on deployed site
 - Validate crop constants with local agricultural references
-- Add automated tests and benchmark against a greedy baseline
+- Seven automated core tests and CI are present; extend with benchmark against a greedy baseline and independently validated agronomy
 - Publish accessible working site and <=7 slide or <=30 second demo
 - Disclose all SI-assisted content and third-party data/assets

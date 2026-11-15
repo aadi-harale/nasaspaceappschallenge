@@ -5,3 +5,6 @@
 .skip-link{position:fixed;top:10px;left:12px;z-index:100;background:#d4f8aa;color:#10291b;border-radius:8px;padding:12px 17px;font-weight:800;transform:translateY(-160%)}
 .skip-link:focus{transform:translateY(0)}
 #main-content:focus{outline:none}
+
+/* Farmer priority locks */
+.lock-choice{display:flex;align-items:center;gap:7px;margin:9px 0 0;color:#b6d0b4;font-size:10px;cursor:pointer;line-height:1.5}.lock-choice input{accent-color:#c4ee93;width:14px;height:14px;cursor:pointer}.lock-choice.locked{color:#d4f8ac;font-weight:800}.lock-explainer{margin-top:14px;display:flex;align-items:center;gap:9px;padding:13px;border:1px solid #547b56;border-radius:11px;background:#203b2a;color:#c4ddb9;font-size:10px;line-height:1.6}.lock-explainer>svg{color:#c1efa3;flex-shrink:0}.lock-explainer span{flex:1}.lock-explainer button{border:1px solid #759472;background:#31523a;color:#d6efc9;font-size:10px;border-radius:8px;padding:7px;white-space:nowrap}.lock-explainer button:hover{background:#436747}@media(max-width:470px){.lock-explainer{flex-wrap:wrap}.lock-explainer button{margin-left:23px}}

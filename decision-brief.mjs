@@ -25,7 +25,7 @@ export function createDecisionBrief({plan,settings,lockedSlots=[false,false,fals
  "",
  "INPUT PROVENANCE",
  "Rainfall mode: "+dataSource,
- sourceUrl?"NASA API URL: "+sourceUrl:"No scenario-specific NASA API URL: values may be typed assumptions.",
+ sourceUrl?"Source / provenance URL: "+sourceUrl:"No scenario-specific NASA API URL: values may be typed assumptions.",
  "Kharif seasonal rainfall input: "+formatNumber(settings.rainfall.kharif)+" mm",
  "Rabi seasonal rainfall input: "+formatNumber(settings.rainfall.rabi)+" mm",
  "Irrigation allowance per season: "+formatNumber(settings.irrigation)+" mm (farmer assumption)",

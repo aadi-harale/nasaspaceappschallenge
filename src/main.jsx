@@ -28,7 +28,7 @@ function App(){
  const output=result.data;
  const alternative=output?.alternative;
  const explanation=useMemo(()=>alternative?explainRepair(plan,alternative.plan,settings):null,[plan,alternative,settings]);
- const historical=useMemo(()=>{try{return replayObservedYears(plan,{soil,irrigation,stress})}catch{return []}},[plan,soil,irrigation,stress]);
+ const historical=useMemo(()=>{try{return replayObservedYears(plan,{soil,irrigation,stress,lockedSlots})}catch{return []}},[plan,soil,irrigation,stress,lockedSlots]);
  const isLinked=nasa&&Number(location.lat)===nasa.lat&&Number(location.lon)===nasa.lon&&rainfall.kharif===nasa.rainfall.kharif&&rainfall.rabi===nasa.rainfall.rabi;
  const setPreset=(preset)=>{const p=presets[preset];setRainfall({...p.rainfall});setStress(p.stress);setIrrigation(p.irrigation);setNasa(null);setApiError("")};
  async function loadNasa(){setLoading(true);setApiError("");try{const x=await fetchNasa(Number(location.lat),Number(location.lon));setNasa({...x,lat:Number(location.lat),lon:Number(location.lon)});setRainfall({...x.rainfall});}catch(e){setNasa(null);setApiError(String(e.message||e))}finally{setLoading(false)}}

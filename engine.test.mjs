@@ -61,3 +61,13 @@ test("unlocked repair remains backward compatible",()=>{
  const explicitResult=repair(initial,s,[false,false,false,false]);
  assert.deepEqual(defaultResult,explicitResult);
 });
+
+test("NASA historical sensitivity scenarios respect farmer crop locks",async()=>{
+ const {replayObservedYears}=await import("./historical-replay.mjs");
+ const rows=replayObservedYears(initial,{soil:"medium",irrigation:180,stress:1,lockedSlots:[false,true,false,false]});
+ assert.equal(rows.length,2);
+ for(const row of rows){
+   assert.deepEqual(row.lockedSlots,[false,true,false,false]);
+   assert.equal(row.alternative,null); // locked Wheat is above the encoded Rabi water allowance
+ }
+});

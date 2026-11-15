@@ -66,3 +66,17 @@ export async function fetchNasa(lat,lon){
  const response=await fetch(url,{signal:AbortSignal.timeout(18000)});if(!response.ok)throw Error("NASA POWER HTTP "+response.status);
  return {...parseNasa(await response.json()),url:url.href,period:start+"–"+end};
 }
+/** Explain substitutions using the same evaluated slots used for decision making. */
+export function explainRepair(originalPlan,repairedPlan,settings){
+ const before=evaluate(originalPlan,settings);
+ const after=evaluate(repairedPlan,settings);
+ const changes=originalPlan.flatMap((key,i)=>key===repairedPlan[i]?[]:[{
+   slot:i+1,from:crops[key].name,to:crops[repairedPlan[i]].name,
+   oldDeficitMm:before.slots[i].deficit,newDeficitMm:after.slots[i].deficit,
+   deficitReductionMm:before.slots[i].deficit-after.slots[i].deficit,
+   note:before.slots[i].deficit===0?"Substitution may reflect diversity or tie-breaker constraints, not a direct water deficit.":"Water deficit changed under the encoded model."
+ }]);
+ return {changes,originalDeficitMm:before.totalDeficit,repairedDeficitMm:after.totalDeficit,
+    waterConstraintsPass:after.feasible,oldFamilies:before.families,newFamilies:after.families,
+    disclaimer:"Not field-validated; crop water and soil coefficients are provisional."};
+}

@@ -35,3 +35,9 @@
 .negotiation-actions .hero-button{white-space:normal;text-align:center}
 .negotiation-actions p{margin:0;max-width:450px;color:#aec9af;font-size:11px;line-height:1.6}
 @media(max-width:600px){.negotiation-actions .hero-button{width:100%}}
+
+.input-provenance{margin:16px 0 0;display:flex;align-items:flex-start;gap:8px;color:#b4d5b8;font-size:10px;line-height:1.55}.input-provenance svg{flex-shrink:0;color:#b2e995}
+.unlock-proposal{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #365b3a;padding:10px 0}
+.unlock-proposal p{margin:0;flex:1}
+.unlock-proposal button{display:inline-flex;align-items:center;gap:6px;padding:9px 11px;background:#c9f1a0;color:#14321a;border:none;border-radius:9px;font-size:10px;font-weight:800;white-space:nowrap}
+.unlock-proposal button:hover{background:#e0ffc3}@media(max-width:630px){.unlock-proposal{display:block}.unlock-proposal button{margin-top:9px}}

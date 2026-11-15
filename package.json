@@ -7,7 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "node --test engine.test.mjs"
+    "test": "node --test engine.test.mjs negotiator.test.mjs decision-brief.test.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",

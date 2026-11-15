@@ -8,6 +8,36 @@
 
 An explainable crop-rotation *repair* proof of concept. Instead of ranking unrelated crops, AgroShift starts from the farmer's existing four-season plan, diagnoses modeled water-budget violations, and finds the fewest crop substitutions satisfying encoded constraints.
 
+## Experimental product: Constraint Negotiator (not the submitted main branch)
+
+**Branch:** `experiment/constraint-negotiator`
+
+**Experimental preview:** https://agroshift-resilience-6jtzi12p2-aadis-projects-a80196d0.vercel.app/
+
+This branch completes a **prototype farmer-to-advisor decision workflow**, without claiming field-ready agronomic validation:
+
+1. Select a four-season rotation; lock crops the farmer will not substitute.
+2. Set rainfall, provisional soil class, stress and per-season irrigation assumptions.
+3. View minimum-change modeled repair or a no-solution explanation.
+4. Inspect per-slot water headroom and hypothetical rainfall-factor sensitivity for the **same selected plan**.
+5. If no passing candidate exists, identify which single lock could be relaxed or how much hypothetical per-season irrigation allowance would be mathematically necessary (bounded to +600 mm; **not water withdrawal advice**).
+6. On the NASA observations page, load a **verified historical season pair** directly into the rescue lab with source labeling. One pair is repeated across the four-slot planning model; it is **not consecutive two-year climate replay**.
+7. Download the **advisor decision brief** (local text file) with input provenance, crops, constraints, headroom, sensitivity and an agronomist checklist. Export raw JSON separately.
+
+### Scientific scope
+
+The system remains a **decision-support software prototype**. It has no soil laboratory input, farm validation, locally calibrated crop coefficients, probabilistic drought model, verified farmer adoption or yield forecasting. The 20/10/5% rainfall sensitivity reductions are hypothetical stress factors, not estimated probabilities. Rounding in the engine can move exact thresholds by about half a millimeter. Extra irrigation calculations do not establish a viable or lawful local water source.
+
+### Developer verification
+
+```bash
+npm install
+npm test
+npm run build
+```
+
+The experimental CI runs engine, negotiator, and decision-brief tests. The separate Vercel preview does **not** replace the submitted production link.
+
 ## React application (current)
 
 The current deployed UI is **React 19 + Vite 6 + Lucide React icons**, with an original dark botanical design and responsive layout. It reuses the existing `engine.mjs` and `historical-replay.mjs`; no scientific scoring or agronomic coefficients were replaced for the redesign.

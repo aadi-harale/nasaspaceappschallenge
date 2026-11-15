@@ -19,7 +19,8 @@ export function evaluate(plan,s){
  const errors=slots.flatMap((x,i)=>x.deficit>0?[`Season ${i+1}: ${x.name} requires ${x.deficit} mm beyond modeled availability`]:[]);
  return {feasible:errors.length===0,errors,slots,totalDeficit:slots.reduce((a,x)=>a+x.deficit,0),totalDemand:slots.reduce((a,x)=>a+x.demand,0),families:new Set(plan.map(x=>crops[x].family)).size,legumeSlots:plan.filter(x=>crops[x].family==="legume").length,coverDays:plan.reduce((a,x)=>a+crops[x].cover,0)};
 }
-export function repair(plan,s){
+export function repair(plan,s,lockedSlots=[false,false,false,false]){
+ if(!Array.isArray(lockedSlots)||lockedSlots.length!==4||lockedSlots.some(x=>typeof x!=="boolean"))throw Error("Locked slots must be four booleans");
  const original=evaluate(plan,s),valid=[],all=[];
  // Exhaustively enumerate all 4-season plans: 4 x 4 x 4 x 4 = 256 candidates.
  // This proves minimum substitutions within the encoded crop catalog.
@@ -27,10 +28,10 @@ export function repair(plan,s){
  for(const x0 of options[0])for(const x1 of options[1])for(const x2 of options[2])for(const x3 of options[3]){
   const p=[x0,x1,x2,x3],e=evaluate(p,s),changes=p.filter((x,i)=>x!==plan[i]).length;
   all.push({plan:p,eval:e,changes});
-  if(e.feasible&&e.families>=2)valid.push({plan:p,eval:e,changes});
+  if(e.feasible&&e.families>=2&&p.every((crop,i)=>!lockedSlots[i]||crop===plan[i]))valid.push({plan:p,eval:e,changes});
  }
  valid.sort((a,b)=>a.changes-b.changes||b.eval.families-a.eval.families||b.eval.coverDays-a.eval.coverDays||a.eval.totalDemand-b.eval.totalDemand);
- return {original,alternative:valid[0]??null,candidates:all.length,feasibleCount:valid.length};
+ return {original,alternative:valid[0]??null,candidates:all.length,feasibleCount:valid.length,lockedSlots:[...lockedSlots]};
 }
 export function parseNasa(json){
  const daily=json?.properties?.parameter?.PRECTOTCORR;

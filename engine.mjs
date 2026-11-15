@@ -20,20 +20,42 @@ export function evaluate(plan,s){
  return {feasible:errors.length===0,errors,slots,totalDeficit:slots.reduce((a,x)=>a+x.deficit,0),totalDemand:slots.reduce((a,x)=>a+x.demand,0),families:new Set(plan.map(x=>crops[x].family)).size,legumeSlots:plan.filter(x=>crops[x].family==="legume").length,coverDays:plan.reduce((a,x)=>a+crops[x].cover,0)};
 }
 export function repair(plan,s){
- const original=evaluate(plan,s),valid=[],all=[],ids=Object.keys(crops);
- const check=p=>{const e=evaluate(p,s),changes=p.filter((x,i)=>x!==plan[i]).length;all.push({plan:p,eval:e,changes});if(e.feasible&&e.families>=2)valid.push({plan:p,eval:e,changes})};
- check([...plan]);
- for(let i=0;i<4;i++)for(const x of ids)if(x!==plan[i]&&crops[x].season===seasons[i]){const p=[...plan];p[i]=x;check(p)}
- for(let i=0;i<4;i++)for(let j=i+1;j<4;j++)for(const x of ids)for(const y of ids)if(x!==plan[i]&&y!==plan[j]&&crops[x].season===seasons[i]&&crops[y].season===seasons[j]){const p=[...plan];p[i]=x;p[j]=y;check(p)}
+ const original=evaluate(plan,s),valid=[],all=[];
+ // Exhaustively enumerate all 4-season plans: 4 x 4 x 4 x 4 = 256 candidates.
+ // This proves minimum substitutions within the encoded crop catalog.
+ const options=seasons.map(season=>Object.keys(crops).filter(key=>crops[key].season===season));
+ for(const x0 of options[0])for(const x1 of options[1])for(const x2 of options[2])for(const x3 of options[3]){
+  const p=[x0,x1,x2,x3],e=evaluate(p,s),changes=p.filter((x,i)=>x!==plan[i]).length;
+  all.push({plan:p,eval:e,changes});
+  if(e.feasible&&e.families>=2)valid.push({plan:p,eval:e,changes});
+ }
  valid.sort((a,b)=>a.changes-b.changes||b.eval.families-a.eval.families||b.eval.coverDays-a.eval.coverDays||a.eval.totalDemand-b.eval.totalDemand);
  return {original,alternative:valid[0]??null,candidates:all.length,feasibleCount:valid.length};
 }
 export function parseNasa(json){
- const daily=json?.properties?.parameter?.PRECTOTCORR;if(!daily)throw Error("NASA response lacks precipitation");
- const groups={};
- for(const [date,mm] of Object.entries(daily)){if(!/^\d{8}$/.test(date)||!Number.isFinite(mm)||mm<0)continue;const y=+date.slice(0,4),m=+date.slice(4,6),k=m>=6&&m<=9?"kharif":m>=10||m<=3?"rabi":null;if(!k)continue;const year=k==="rabi"&&m<=3?y-1:y,key=year+"-"+k;const g=groups[key]??={year,season:k,total:0,days:0};g.total+=mm;g.days++;}
- const records=Object.values(groups).filter(g=>g.days>=(g.season==="kharif"?118:177));
- function median(k){const vals=records.filter(g=>g.season===k).map(g=>g.total).sort((a,b)=>a-b);if(!vals.length)throw Error("Insufficient complete NASA seasonal records");return Math.round(vals[Math.floor((vals.length-1)/2)])}
+ const daily=json?.properties?.parameter?.PRECTOTCORR;
+ if(!daily||typeof daily!=="object")throw Error("NASA response lacks precipitation");
+ const groups=new Map();
+ for(const [date,mm] of Object.entries(daily)){
+  if(!/^\\d{8}$/.test(date)||!Number.isFinite(mm)||mm<0)continue;
+  const y=+date.slice(0,4),m=+date.slice(4,6),day=+date.slice(6,8);
+  if(m<1||m>12||day<1||day>new Date(Date.UTC(y,m,0)).getUTCDate())continue;
+  const season=m>=6&&m<=9?"kharif":m>=10||m<=3?"rabi":null;
+  if(!season)continue;
+  const year=season==="rabi"&&m<=3?y-1:y,key=year+"-"+season;
+  const g=groups.get(key)??{year,season,total:0,days:0};
+  g.total+=mm;g.days++;groups.set(key,g);
+ }
+ const records=[...groups.values()].filter(g=>{
+  const expected=g.season==="kharif"?122:182+(new Date(Date.UTC(g.year+1,1,29)).getUTCMonth()===1?1:0);
+  return g.days===expected;
+ });
+ function median(k){
+  const vals=records.filter(g=>g.season===k).map(g=>g.total).sort((a,b)=>a-b);
+  if(!vals.length)throw Error("Insufficient complete NASA seasonal records");
+  const mid=Math.floor(vals.length/2);
+  return Math.round(vals.length%2?vals[mid]:(vals[mid-1]+vals[mid])/2);
+ }
  return {rainfall:{kharif:median("kharif"),rabi:median("rabi")},records};
 }
 export async function fetchNasa(lat,lon){

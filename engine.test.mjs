@@ -71,3 +71,29 @@ test("NASA historical sensitivity scenarios respect farmer crop locks",async()=>
    assert.equal(row.alternative,null); // locked Wheat is above the encoded Rabi water allowance
  }
 });
+
+test("when locks eliminate passing candidates, explain priority conflict",()=>{
+ const s={rainfall:{kharif:520,rabi:140},irrigation:180,soil:"medium",stress:1};
+ const result=repair(initial,s,[false,true,false,true]);
+ assert.equal(result.alternative,null);
+ assert.equal(result.blockedByFarmerLocks,true);
+ assert.ok(result.feasibleIgnoringLocks>0);
+});
+test("when water constraints fail for every candidate, do not blame farmer locks",()=>{
+ const s={rainfall:{kharif:0,rabi:0},irrigation:0,soil:"medium",stress:1};
+ const result=repair(initial,s,[true,true,true,true]);
+ assert.equal(result.alternative,null);
+ assert.equal(result.blockedByFarmerLocks,false);
+ assert.equal(result.feasibleIgnoringLocks,0);
+});
+test("an original water-feasible rotation can still violate the diversity rule",()=>{
+ const s={rainfall:{kharif:1000,rabi:1000},irrigation:0,soil:"medium",stress:1};
+ const sameFamily=["millet","wheat","millet","wheat"];
+ const checked=evaluate(sameFamily,s);
+ assert.equal(checked.feasible,true);
+ assert.equal(checked.families,1);
+ const r=repair(sameFamily,s);
+ assert.ok(r.alternative);
+ assert.ok(r.alternative.changes>=1);
+ assert.ok(r.alternative.eval.families>=2);
+});

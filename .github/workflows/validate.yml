@@ -1,7 +1,7 @@
 name: Validate AgroShift
 on:
   push:
-    branches: [main]
+    branches: [main, 'experiment/constraint-negotiator']
   pull_request:
   workflow_dispatch:
 jobs:
@@ -15,7 +15,7 @@ jobs:
       - name: Engine syntax
         run: node --check engine.mjs
       - name: Decision engine regression tests
-        run: node --test engine.test.mjs
+        run: node --test engine.test.mjs negotiator.test.mjs
       - name: Install React and build dependencies
         run: npm install --no-audit --no-fund
       - name: Build React app and static NASA pages

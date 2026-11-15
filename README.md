@@ -8,6 +8,26 @@
 
 An explainable crop-rotation *repair* proof of concept. Instead of ranking unrelated crops, AgroShift starts from the farmer's existing four-season plan, diagnoses modeled water-budget violations, and finds the fewest crop substitutions satisfying encoded constraints.
 
+## React application (current)
+
+The current deployed UI is **React 19 + Vite 6 + Lucide React icons**, with an original dark botanical design and responsive layout. It reuses the existing `engine.mjs` and `historical-replay.mjs`; no scientific scoring or agronomic coefficients were replaced for the redesign.
+
+- **Rescue Lab:** interactive seasonal rain and irrigation sliders, scenario presets, crop slots, exhaustive search, before/after explanation, JSON evidence export
+- **NASA Observations:** independently verified 2022–2024 seasonal totals, observed-year scenario sensitivity, browser POWER fetch with explicit failure handling
+- **Evidence & Limits:** encoded assumptions and a link to the printable agronomist review sheet
+- **Public judge resources:** `/demo.html` (seven slides) and `/review.html`
+
+```bash
+npm install
+npm run dev
+npm test
+npm run build
+```
+
+GitHub Actions runs the engine regression suite and the Vite production build, including checks that the public demonstration and scientific review pages remain in `dist/`.
+
+**Verified React build workflow:** https://github.com/aadi-harale/nasaspaceappschallenge/actions/runs/43735756518
+
 ## What has actually been demonstrated
 
 - Exhaustive evaluation of **256** four-season candidate rotations (4 crop choices for each of four seasons).
@@ -44,12 +64,9 @@ The season definitions in this hackathon model are simplified (Kharif June–Sep
 
 Existing Field Shift demos already display NASA observations, soil indicators, and ranked crop rotations. The specific narrow contribution here is **constraint failure diagnosis and exhaustive minimum-change rotation repair** with a visible no-solution path. This is an implementation-level contribution, not a claim of having invented constraint optimization.
 
-## Running and testing
+## Running the NASA verification script
 
 ```bash
-python -m http.server 8000
-# visit http://localhost:8000
-node --test engine.test.mjs
 python scripts/verify_nasa.py
 ```
 

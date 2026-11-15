@@ -9,11 +9,11 @@ export const nasaEvidence={
  provenance:"https://github.com/aadi-harale/nasaspaceappschallenge/actions/runs/43730283559",
  parameter:"PRECTOTCORR",unit:"mm/day",rawSha256:"66fd31820934bbf590b5a44321020d1bb5d12b369a4d38eeadcb8e6cf5a7060c"
 };
-export function replayObservedYears(plan,{soil="medium",irrigation=180,stress=1}={}){
+export function replayObservedYears(plan,{soil="medium",irrigation=180,stress=1,lockedSlots=[false,false,false,false]}={}){
  return observedYears.map(year=>{
   const scenario={rainfall:year.rainfall,soil,irrigation,stress};
-  const result=repair(plan,scenario);
-  return {label:year.label,year:year.year,rainfall:year.rainfall,originalDeficitMm:result.original.totalDeficit,
+  const result=repair(plan,scenario,lockedSlots);
+  return {label:year.label,year:year.year,rainfall:year.rainfall,lockedSlots:[...lockedSlots],originalDeficitMm:result.original.totalDeficit,
     originalFeasible:result.original.feasible,
     alternative:result.alternative?.plan??null,
     substitutions:result.alternative?.changes??null,

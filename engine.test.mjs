@@ -38,3 +38,26 @@ test("counterfactual explanation does not claim water benefits for non-water swa
  assert.equal(x.changes[0].oldDeficitMm,0);
  assert.match(x.changes[0].note,/diversity or tie-breaker/);
 });
+
+test("farmer locks a slot and optimizer preserves that exact crop",()=>{
+ const locked=repair(initial,s,[true,false,false,false]);
+ assert.ok(locked.alternative);
+ assert.equal(locked.alternative.plan[0],initial[0]);
+ assert.equal(locked.alternative.changes,2);
+ assert.equal(locked.feasibleCount>0,true);
+});
+test("locking failing Wheat slots returns no passing rotation",()=>{
+ const locked=repair(initial,s,[false,true,false,true]);
+ assert.equal(locked.alternative,null);
+ assert.equal(locked.feasibleCount,0);
+ assert.equal(locked.candidates,256);
+});
+test("invalid lock shape rejected",()=>{
+ assert.throws(()=>repair(initial,s,[true,false]),/Locked slots/);
+ assert.throws(()=>repair(initial,s,[true,"false",false,false]),/Locked slots/);
+});
+test("unlocked repair remains backward compatible",()=>{
+ const defaultResult=repair(initial,s);
+ const explicitResult=repair(initial,s,[false,false,false,false]);
+ assert.deepEqual(defaultResult,explicitResult);
+});

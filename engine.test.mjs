@@ -10,3 +10,15 @@ test("NASA parser calculates complete season totals",()=>{const d={};for(let y=2
 
 test("repair search covers entire four-season catalog",()=>{const r=repair(initial,s);assert.equal(r.candidates,256)});
 test("incomplete NASA seasons must be rejected",()=>{const d={};for(let m=6;m<=9;m++)for(let day=1;day<=new Date(Date.UTC(2022,m,0)).getUTCDate();day++)d["2022"+String(m).padStart(2,"0")+String(day).padStart(2,"0")]=1;assert.throws(()=>parseNasa({properties:{parameter:{PRECTOTCORR:d}}}),/Insufficient/)});
+
+test("historical replay uses verified NASA seasonal totals and does not invent third Rabi",async()=>{
+ const {replayObservedYears,incompleteYear}=await import("./historical-replay.mjs");
+ const rows=replayObservedYears(initial,{soil:"medium",irrigation:180,stress:1});
+ assert.equal(rows.length,2);
+ assert.equal(rows[0].rainfall.rabi,227.23);
+ assert.equal(rows[1].rainfall.rabi,75.95);
+ assert.equal(rows[0].originalDeficitMm,260);
+ assert.equal(rows[1].originalDeficitMm,486);
+ assert.equal(rows[1].alternative,null);
+ assert.equal(incompleteYear.year,2024);
+});
